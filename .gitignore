@@ -46,9 +46,14 @@ dist/
 [Bb]uilds/
 [Ll]ogs/
 [Uu]serSettings/
-*.csproj
-*.sln
+# Unity regenerates these at its project root; scoped so real .NET solutions
+# elsewhere (app02_csharp_wiki_chat) keep their project files tracked.
+app_java_wiki_chat/unity-frontend/*.csproj
+app_java_wiki_chat/unity-frontend/*.sln
 crashlytics-build.properties
+
+######### .NET
+[Bb]in/
 
 ######### Python
 

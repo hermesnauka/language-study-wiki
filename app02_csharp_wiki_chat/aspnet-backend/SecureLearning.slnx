@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SecureLearning.Backend.Tests/SecureLearning.Backend.Tests.csproj" />
+  <Project Path="SecureLearning.Backend/SecureLearning.Backend.csproj" />
+</Solution>
