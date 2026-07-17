@@ -14,6 +14,7 @@ from .graph_pipeline import ingest_markdown
 from .markdown_sandbox import MarkdownTooLargeError
 from .models import SymbolMapping, Term, TranslationEdge, WikiDocument
 from .symbols import SymbolCodec
+from .translation import get_translation_provider
 
 
 def _body(request) -> dict:
@@ -108,3 +109,19 @@ def symbols_apply(request):
     codec = SymbolCodec(mappings)
     result = codec.expand(text) if direction == "expand" else codec.contract(text)
     return {"result": result}
+
+
+@api_view
+@require_http_methods(["POST"])
+def chat_translate(request):
+    """FR-3: on-demand translation for the Spring backend's real-time 2-user chat.
+    Best-effort like the wiki ingestion pipeline's own translation gap-filling —
+    `translation` is null rather than an error when no provider is unavailable."""
+    body = _body(request)
+    text = body.get("text")
+    source_lang = body.get("sourceLang")
+    target_lang = body.get("targetLang")
+    if not text or not source_lang or not target_lang:
+        raise ValueError("Missing required field: text, sourceLang, targetLang are all required")
+    translation = get_translation_provider().translate(text, source_lang, target_lang)
+    return {"translation": translation}

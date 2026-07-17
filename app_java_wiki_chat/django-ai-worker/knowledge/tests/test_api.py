@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from django.test import TestCase
 
@@ -74,3 +75,23 @@ class ApiTest(TestCase):
     def test_translations_of_unknown_term_is_a_404(self):
         response = self.client.get("/api/graph/terms/999999/translations")
         self.assertEqual(response.status_code, 404)
+
+    def test_chat_translate_returns_the_provider_result(self):
+        with patch("knowledge.views.get_translation_provider") as get_provider:
+            get_provider.return_value.translate.return_value = "kot"
+            response = self._post("/api/chat/translate",
+                                  {"text": "cat", "sourceLang": "en", "targetLang": "pl"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"translation": "kot"})
+
+    def test_chat_translate_returns_null_when_provider_unavailable(self):
+        with patch("knowledge.views.get_translation_provider") as get_provider:
+            get_provider.return_value.translate.return_value = None
+            response = self._post("/api/chat/translate",
+                                  {"text": "cat", "sourceLang": "en", "targetLang": "pl"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"translation": None})
+
+    def test_chat_translate_missing_field_is_a_400(self):
+        response = self._post("/api/chat/translate", {"text": "cat", "sourceLang": "en"})
+        self.assertEqual(response.status_code, 400)

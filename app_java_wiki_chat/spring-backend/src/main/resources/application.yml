@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: spring-backend
+  datasource:
+    url: jdbc:h2:mem:chatdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+app:
+  crypto:
+    # Interim AES-256-GCM key for at-rest chat history encryption (SR-4), Base64-encoded.
+    # This is a placeholder: production key material must come from the ephemeral
+    # PQC session key once cpp-crypto-core's ML-KEM exchange is wired in via JNI
+    # (see PQC_PRIVATE_KEY in the root CLAUDE.md). If unset, a random key is generated
+    # at startup, which is fine for dev/tests but means history is unreadable after a
+    # restart — do not rely on it for anything that must survive a redeploy.
+    symmetric-key-base64: ${APP_CRYPTO_KEY:}
+  ai-worker:
+    # Base URL of the django-ai-worker service that provides best-effort translation.
+    base-url: ${AI_WORKER_BASE_URL:http://localhost:8000}
