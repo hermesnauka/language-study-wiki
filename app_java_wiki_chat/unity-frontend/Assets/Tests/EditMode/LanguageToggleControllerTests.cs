@@ -27,27 +27,30 @@ namespace SecureLearning.Client.Tests
             Assert.That(controller.Current, Is.EqualTo(Language.English));
         }
 
+        // Unity Test Framework 1.1.x (the 2022.3 default) rejects async Task test
+        // methods, so these block on ToggleAsync instead — safe here because
+        // RecordingNotifier completes synchronously.
         [Test]
-        public async Task TogglingSwitchesToPolishThenBackToEnglish()
+        public void TogglingSwitchesToPolishThenBackToEnglish()
         {
             var controller = new LanguageToggleController(new RecordingNotifier());
 
-            await controller.ToggleAsync();
+            controller.ToggleAsync().GetAwaiter().GetResult();
             Assert.That(controller.Current, Is.EqualTo(Language.Polish));
 
-            await controller.ToggleAsync();
+            controller.ToggleAsync().GetAwaiter().GetResult();
             Assert.That(controller.Current, Is.EqualTo(Language.English));
         }
 
         [Test]
-        public async Task TogglingRaisesLanguageChangedAndNotifiesTheBackend()
+        public void TogglingRaisesLanguageChangedAndNotifiesTheBackend()
         {
             var notifier = new RecordingNotifier();
             var controller = new LanguageToggleController(notifier);
             Language? raised = null;
             controller.LanguageChanged += lang => raised = lang;
 
-            await controller.ToggleAsync();
+            controller.ToggleAsync().GetAwaiter().GetResult();
 
             Assert.That(raised, Is.EqualTo(Language.Polish));
             Assert.That(notifier.Notified, Is.EqualTo(new[] { Language.Polish }));
