@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.springframework.http.MediaType;
+
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +45,27 @@ class SessionControllerTest {
         when(roomService.join("NOPE")).thenThrow(new RoomNotFoundException("NOPE"));
 
         mockMvc.perform(post("/api/rooms/NOPE/join")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void participantCanNotifyALanguageChange() throws Exception {
+        when(roomService.belongsToRoom("ROOM1", "session-a")).thenReturn(true);
+
+        mockMvc.perform(post("/api/rooms/ROOM1/language")
+                        .header("X-Session-Id", "session-a")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"language\":\"pl\"}"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void nonParticipantCannotNotifyALanguageChange() throws Exception {
+        when(roomService.belongsToRoom("ROOM1", "stranger")).thenReturn(false);
+
+        mockMvc.perform(post("/api/rooms/ROOM1/language")
+                        .header("X-Session-Id", "stranger")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"language\":\"pl\"}"))
+                .andExpect(status().isForbidden());
     }
 }

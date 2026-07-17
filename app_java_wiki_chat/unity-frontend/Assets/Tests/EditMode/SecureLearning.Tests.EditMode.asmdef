@@ -1,0 +1,25 @@
+{
+    "name": "SecureLearning.Tests.EditMode",
+    "rootNamespace": "SecureLearning.Client.Tests",
+    "references": [
+        "SecureLearning.Client",
+        "Newtonsoft.Json",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
